@@ -1,0 +1,1583 @@
+{
+  "name": "Get lead from spreadsheet to Lead Engine",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRange",
+              "headerRow": 2,
+              "firstDataRow": 3
+            }
+          }
+        }
+      },
+      "id": "b197f8fa-5e0d-4bf0-bfff-ba8c93623413",
+      "name": "Read Google Sheet2",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        -1392,
+        1648
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all items\nconst items = $input.all();\n\n// Remove the last item and return the rest\nconst result = items.slice(0, -1);\n\nreturn result;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1184,
+        1648
+      ],
+      "id": "e884c898-793d-4020-a55f-b0564ee39048",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 872591740,
+          "mode": "list",
+          "cachedResultName": "Old Leads data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=872591740"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead ID": "={{ $json['Lead ID'] }}",
+            "Company Name": "={{ $json['Company Name'] }}",
+            "Job Role": "={{ $json['Job Role'] }}",
+            "Import Date": "={{ $json['Import Date'] }}",
+            "Contact Name": "={{ $json['Contact Name'] }}",
+            "Phone Number": "={{ $json['Phone Number'] }}",
+            "Email": "={{ $json.Email }}",
+            "Contact Method": "={{ $json['Contact Method'] }}",
+            "If telegram: USER_ID": "={{ $json['If telegram: USER_ID'] }}",
+            "Message History": "={{ $json['Message History'] }}",
+            "Contact Date": "={{ $json['Contact Date'] }}",
+            "Next Action Date": "={{ $json['Next Action Date'] }}",
+            "Lead Status": "={{ $json['Lead Status'] }}",
+            "Last Contact Date": "={{ $json['Last Contact Date'] }}",
+            "Candidates Matched ID": "={{ $json['Candidates Matched ID'] }}",
+            "Job Role Needed": "={{ $json['Job Role Needed'] }}",
+            "Number of Workers Needed": "={{ $json['Number of Workers Needed'] }}",
+            "Salary Range": "={{ $json['Salary Range'] }}",
+            "Working Hours": "={{ $json['Working Hours'] }}",
+            "Accomodation Provided": "={{ $json['Accomodation Provided'] }}",
+            "Email Response": "={{ $json['Email Response'] }}",
+            "Whatsapp Response": "={{ $json['Whatsapp Response'] }}",
+            "Telegram Response": "={{ $json['Telegram Response'] }}",
+            "SMS Response": "={{ $json['SMS Response'] }}",
+            "Attempt Count": "={{ $json['Attempt Count'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job Role",
+              "displayName": "Job Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Import Date",
+              "displayName": "Import Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Method",
+              "displayName": "Contact Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "If telegram: USER_ID",
+              "displayName": "If telegram: USER_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Message History",
+              "displayName": "Message History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Date",
+              "displayName": "Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Next Action Date",
+              "displayName": "Next Action Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Lead Status",
+              "displayName": "Lead Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Contact Date",
+              "displayName": "Last Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Candidates Matched ID",
+              "displayName": "Candidates Matched ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job Role Needed",
+              "displayName": "Job Role Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Number of Workers Needed",
+              "displayName": "Number of Workers Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Working Hours",
+              "displayName": "Working Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Accomodation Provided",
+              "displayName": "Accomodation Provided",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Response",
+              "displayName": "Email Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Whatsapp Response",
+              "displayName": "Whatsapp Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Telegram Response",
+              "displayName": "Telegram Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SMS Response",
+              "displayName": "SMS Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Attempt Count",
+              "displayName": "Attempt Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "locationDefine": {
+            "values": {
+              "headerRow": 2
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -640,
+        1488
+      ],
+      "id": "f0ebc493-95e3-4147-91a7-572dc10b90c4",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e6bc24ba-9409-41cd-9fad-119faf799ff8",
+              "leftValue": "={{ $json['Contact Method'] }}",
+              "rightValue": "Email",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -976,
+        1648
+      ],
+      "id": "5fa33632-f2f8-4fa5-9d1c-6c6315022c35",
+      "name": "not email"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "startIndex": "={{ $json.row_number }}"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -160,
+        1632
+      ],
+      "id": "9a965cf0-1adb-4d73-a01f-458d6bdbdb78",
+      "name": "Delete rows or columns from sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -704,
+        1664
+      ],
+      "id": "94adc3c8-be84-4cdd-92c1-557ebadbe296",
+      "name": "Wait1",
+      "webhookId": "5bcff5ed-0246-40a1-920f-26b610940765"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "34c6dc46-033e-4470-9ca0-97ab92506092",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -496,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const maxId = $('Code in JavaScript1').first().json.maxLeadId;\nconst currentRow = $('Loop Over Items2').item.json;\nconst loopIndex = currentRow.loop_index;\n\nreturn [{\n  json: {\n    ...currentRow,\n    assignedLeadId: maxId + loopIndex\n  }\n}];"
+      },
+      "id": "ed54fe2f-c056-4ef8-a62b-e38fd943ba85",
+      "name": "Find Max Lead ID + Assign1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        2224
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        928,
+        2272
+      ],
+      "id": "eeac8a8b-24b3-4c99-b175-be4073670407",
+      "name": "Merge Back1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "494b1245-991b-475a-b165-084ada77d223",
+      "name": "Loop Over Items2",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -592,
+        2208
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "af431b7c-3d3b-4a20-8cbd-23be4fe0182b",
+              "leftValue": "={{ $json.phone }}",
+              "rightValue": "undefined",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "9d6bfbd2-6a93-41b9-aa9b-8ecddbc38dbc",
+      "name": "No Phone number1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        80,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead ID": "={{ $('Find Max Lead ID + Assign1').item.json.assignedLeadId }}",
+            "Phone Number": "={{ $json.phone }}",
+            "Job Role": "={{ $('Find Max Lead ID + Assign1').item.json['Job Title'] }}",
+            "Import Date": "={{ DateTime.now().toFormat('MM/dd/yyyy') }}",
+            "Lead Status": "New",
+            "Attempt Count": "0",
+            "Email": "={{ $('Find Max Lead ID + Assign1').item.json.Email }}",
+            "Contact Method": "Not selected"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role",
+              "displayName": "Job Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Import Date",
+              "displayName": "Import Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Method",
+              "displayName": "Contact Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "If telegram: USER_ID",
+              "displayName": "If telegram: USER_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Message History",
+              "displayName": "Message History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Date",
+              "displayName": "Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next Action Date",
+              "displayName": "Next Action Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Status",
+              "displayName": "Lead Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Contact Date",
+              "displayName": "Last Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Candidates Matched ID",
+              "displayName": "Candidates Matched ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role Needed",
+              "displayName": "Job Role Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number of Workers Needed",
+              "displayName": "Number of Workers Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Working Hours",
+              "displayName": "Working Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Accomodation Provided",
+              "displayName": "Accomodation Provided",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Response",
+              "displayName": "Email Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Whatsapp Response",
+              "displayName": "Whatsapp Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Telegram Response",
+              "displayName": "Telegram Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SMS Response",
+              "displayName": "SMS Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Attempt Count",
+              "displayName": "Attempt Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "locationDefine": {
+            "values": {
+              "headerRow": 2
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        2304
+      ],
+      "id": "eecad8d4-8888-48e8-9764-6c74f15b4f63",
+      "name": "Append - Phone1",
+      "retryOnFail": false,
+      "waitBetweenTries": 2000,
+      "maxTries": 5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        2272
+      ],
+      "id": "79f03fc9-6810-464a-b848-b2df2291c8f5",
+      "name": "Wait2",
+      "webhookId": "fdfc910c-cc26-41b2-badb-d8856a6ee3b8"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      phone: String($input.first().json.phone).replace(/\\D/g, '')\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        2288
+      ],
+      "id": "f7af6a86-a182-42af-ad2f-dbd9451bd33a",
+      "name": "Make phone num to string2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead ID": "={{ $('Find Max Lead ID + Assign1').item.json.assignedLeadId }}",
+            "Job Role": "={{ $('Find Max Lead ID + Assign1').item.json['Job Title'] }}",
+            "Contact Method": "Email",
+            "Lead Status": "New",
+            "Import Date": "={{ DateTime.now().toFormat('MM/dd/yyyy') }}",
+            "Attempt Count": "0",
+            "Email": "={{ $('Find Max Lead ID + Assign1').item.json.Email }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role",
+              "displayName": "Job Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Import Date",
+              "displayName": "Import Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Method",
+              "displayName": "Contact Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Message History",
+              "displayName": "Message History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Date",
+              "displayName": "Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next Action Date",
+              "displayName": "Next Action Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Status",
+              "displayName": "Lead Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Contact Date",
+              "displayName": "Last Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Candidates Matched ID",
+              "displayName": "Candidates Matched ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role Needed",
+              "displayName": "Job Role Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number of Workers Needed",
+              "displayName": "Number of Workers Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Working Hours",
+              "displayName": "Working Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Accomodation Provided",
+              "displayName": "Accomodation Provided",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Response",
+              "displayName": "Email Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Whatsapp Response",
+              "displayName": "Whatsapp Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Telegram Response",
+              "displayName": "Telegram Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SMS Response",
+              "displayName": "SMS Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Attempt Count",
+              "displayName": "Attempt Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "locationDefine": {
+            "values": {
+              "headerRow": 2
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        2000
+      ],
+      "id": "53441f40-e857-4485-84bc-f9ad9736a57d",
+      "name": "Append - Email1",
+      "retryOnFail": false,
+      "waitBetweenTries": 2000,
+      "maxTries": 5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      phone: (() => {\n        let phone = String($input.first().json.Phone).replace(/\\D/g, '');\n\n        // If starts with 8, replace first digit with 7\n        if (phone.startsWith('8')) {\n          phone = '7' + phone.slice(1);\n        }\n\n        return phone;\n      })()\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        2224
+      ],
+      "id": "ae2348c5-47a8-4cdd-9e11-8ee0a7506786",
+      "name": "Make phone num to string3"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 17,
+              "triggerAtMinute": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2032,
+        2160
+      ],
+      "id": "ed48fadd-a404-43ff-bcf4-33c06089bce1",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRange",
+              "headerRow": 2,
+              "firstDataRow": 3
+            }
+          }
+        }
+      },
+      "id": "71373e58-9d6a-4644-9193-97ea88a8c836",
+      "name": "Get All Existing Leads2",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1792,
+        2160
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allRows = $input.all();\n\nlet maxId = 0;\nfor (const row of allRows) {\n  const id = parseInt(row.json['Lead ID']);\n  if (!isNaN(id) && id > maxId) {\n    maxId = id;\n  }\n}\n\nreturn [{\n  json: {\n    maxLeadId: maxId\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1584,
+        2160
+      ],
+      "id": "76c1f86e-7908-4db9-8ed6-b4066224efb7",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lCIhwYIHss2THItaeOubZz9ZqlqepG5DuNZUK3BWWrg",
+          "mode": "list",
+          "cachedResultName": "Lead Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lCIhwYIHss2THItaeOubZz9ZqlqepG5DuNZUK3BWWrg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Raw leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lCIhwYIHss2THItaeOubZz9ZqlqepG5DuNZUK3BWWrg/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRange"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1200,
+        2144
+      ],
+      "id": "cbd6e40f-c886-4f8e-8594-2ece120cc14c",
+      "name": "Get row(s) From Lead management",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ========================================\n// ১৮০ বার লুপের LIMIT কন্ট্রোল\n// ========================================\nconst MAX_LOOP_LIMIT = 1;\n\n// সব ইনপুট আইটেম নাও\nconst allItems = $input.all();\n\n// মোট আইটেম সংখ্যা\nconst totalItems = allItems.length;\n\n// ম্যাক্সিমাম ১৮০ পর্যন্ত সীমাবদ্ধ করো\nconst itemsToProcess = allItems.slice(0, MAX_LOOP_LIMIT);\n\nconsole.log(`মোট ডাটা: ${totalItems} টি`);\nconsole.log(`প্রসেস করা হবে: ${itemsToProcess.length} টি (সর্বোচ্চ ${MAX_LOOP_LIMIT})`);\n\n// প্রতিটি আইটেমে loop_index এবং limit info যোগ করো\nconst processedItems = itemsToProcess.map((item, index) => {\n  return {\n    json: {\n      ...item.json,\n      loop_index: index + 1,\n      loop_limit: MAX_LOOP_LIMIT,\n      total_available: totalItems,\n      is_last_item: index === itemsToProcess.length - 1\n    }\n  };\n});\n\nreturn processedItems;"
+      },
+      "id": "427bd72b-aa66-41ab-b44b-0465a90f7ea8",
+      "name": "Set daily Loop Limit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -816,
+        2192
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Read Google Sheet2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "not email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "not email": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Delete rows or columns from sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete rows or columns from sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Max Lead ID + Assign1": {
+      "main": [
+        [
+          {
+            "node": "Make phone num to string3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Back1": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Find Max Lead ID + Assign1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Phone number1": {
+      "main": [
+        [
+          {
+            "node": "Append - Email1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Make phone num to string2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append - Phone1": {
+      "main": [
+        [
+          {
+            "node": "Merge Back1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make phone num to string2": {
+      "main": [
+        [
+          {
+            "node": "Append - Phone1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append - Email1": {
+      "main": [
+        [
+          {
+            "node": "Merge Back1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make phone num to string3": {
+      "main": [
+        [
+          {
+            "node": "No Phone number1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get All Existing Leads2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Existing Leads2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) From Lead management",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) From Lead management": {
+      "main": [
+        [
+          {
+            "node": "Set daily Loop Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set daily Loop Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Moscow",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "c2fa1083-1979-470e-b5c0-09cef4bf9864",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1bbb40a5d9a19a783ea4611efa90a868c66d67af885609f43e8a05b489e51130"
+  },
+  "id": "TkY7WvJSiyS4nXQX",
+  "tags": []
+}

@@ -1,0 +1,3325 @@
+{
+  "name": "Russian workflow for TG, SMS & Email",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "skip-check",
+              "leftValue": "={{ $json._skip }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5ef509b8-1664-45ed-87b9-1cd5c942e762",
+      "name": "Should Contact This Lead?2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -3680,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 25
+      },
+      "id": "5594920c-d501-4a09-8dd2-ac185f76e88d",
+      "name": "Wait 5s Before Next Lead2",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -704,
+        816
+      ],
+      "webhookId": "wait-loop"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "43517df4-c9b9-463c-8ee3-06b9fe13c564",
+              "leftValue": "={{ $json['Message History'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2960,
+        1088
+      ],
+      "id": "7b48aaca-815b-4e26-8ac2-844c5afa6ddd",
+      "name": "Previous conversation is empty?1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "specifyRange",
+              "headerRow": 2,
+              "firstDataRow": 3
+            }
+          }
+        }
+      },
+      "id": "5cb3ac23-3149-4b72-9603-3e2324226742",
+      "name": "Read Google Sheet2",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        -4768,
+        1104
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ========================================\n// ১৮০ বার লুপের LIMIT কন্ট্রোল\n// ========================================\nconst MAX_LOOP_LIMIT = 26;\n\n// সব ইনপুট আইটেম নাও\nconst allItems = $input.all();\n\n// মোট আইটেম সংখ্যা\nconst totalItems = allItems.length;\n\n// ম্যাক্সিমাম ১৮০ পর্যন্ত সীমাবদ্ধ করো\nconst itemsToProcess = allItems.slice(0, MAX_LOOP_LIMIT);\n\nconsole.log(`মোট ডাটা: ${totalItems} টি`);\nconsole.log(`প্রসেস করা হবে: ${itemsToProcess.length} টি (সর্বোচ্চ ${MAX_LOOP_LIMIT})`);\n\n// প্রতিটি আইটেমে loop_index এবং limit info যোগ করো\nconst processedItems = itemsToProcess.map((item, index) => {\n  return {\n    json: {\n      ...item.json,\n      loop_index: index + 1,\n      loop_limit: MAX_LOOP_LIMIT,\n      total_available: totalItems,\n      is_last_item: index === itemsToProcess.length - 1\n    }\n  };\n});\n\nreturn processedItems;"
+      },
+      "id": "b88f42ec-d370-451b-854e-6bc5f40ea1d4",
+      "name": "Set 180 Loop Limit2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4560,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ========================================\n// লুপ শেষে সারসংক্ষেপ\n// ========================================\nconst items = $input.all();\n\nconsole.log(`মোট ${items.length} টি আইটেম সফলভাবে প্রসেস হয়েছে`);\n\nreturn [\n  {\n    json: {\n      summary: `মোট ${items.length} টি আইটেম প্রসেস সম্পন্ন`,\n      total_processed: items.length,\n      completed_at: new Date().toISOString()\n    }\n  }\n];"
+      },
+      "id": "e55273ed-10c9-4bfe-ab0b-7f7eec801a1e",
+      "name": "Loop Complete Summary1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4208,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "381e6b81-3e2e-495f-b833-96121b53812c",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -4368,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [],
+          "number": [
+            {
+              "value1": "={{ $json.row_number }}",
+              "operation": "equal",
+              "value2": "={{ $json.loop_index +2}}"
+            }
+          ]
+        }
+      },
+      "id": "0f5dc473-e16d-4586-b754-695b8a44409f",
+      "name": "Only take 1 lead = loop count",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -4160,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 25
+      },
+      "id": "372f9dc1-fe5f-464e-81b5-b2dea28e1c48",
+      "name": "Wait 5s Before Next Lead",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -432,
+        1808
+      ],
+      "webhookId": "wait-loop"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9805611e-717a-4e29-afcf-7b426b56b807",
+              "leftValue": "={{ $json['Next Action Date'] }}",
+              "rightValue": "={{ DateTime.now().toFormat('MM/dd/yyyy') }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3152,
+        1232
+      ],
+      "id": "4a7395f6-b057-41e7-8c16-84f0983f0e37",
+      "name": "Match with todays date"
+    },
+    {
+      "parameters": {
+        "toRecipients": "={{ $('is no response?').item.json.Email }}",
+        "subject": "={{ $json.subject }}",
+        "bodyContent": "={{ $json.body }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [
+        -1584,
+        1600
+      ],
+      "id": "9fb11859-2963-44e8-b190-3febf92931b5",
+      "name": "Email 1 - Introduction1",
+      "webhookId": "c22cb301-4f57-4641-b3d2-c938bdf26441",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "qJ8BoL5zulZl1YeG",
+          "name": "Microsoft Outlook OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "90e0b0b3-e7ef-4284-8191-289b58f7331d",
+              "leftValue": "={{ $json.success }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1392,
+        1600
+      ],
+      "id": "764716e5-a1ac-4319-9f4b-5b05ab5c54f3",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const attemptCount = $input.first().json['Attempt Count'];\nconst currentDate = DateTime.now().toFormat('MM/dd/yyyy');\nconst currentDate2 = DateTime.now().toFormat('MM/dd/yyyy');\n\nconst signature = `С уважением,\nЕлена\nelena@imployii.com\nTelegram: https://t.me/elenaiimp\nWhatsApp: https://wa.me/48505340709`;\n\nconst daysToAdd = { 1: 2, 2: 5, 3: 10, 4: 10, 5: 60, 6: 62, 7: 65, 8: 70, 9: 80, 10: 90, 11: 92, 12: 95, 13: 100, 14: 110 };\n\n// ── Next action date (based on currentDate2 + gap for current attempt) ──\nconst days = daysToAdd[attemptCount];\nconst nextDate = new Date(currentDate2);\nnextDate.setDate(nextDate.getDate() + days);\nconst nextMonth = String(nextDate.getMonth() + 1).padStart(2, '0');\nconst nextDay   = String(nextDate.getDate()).padStart(2, '0');\nconst nextYear  = nextDate.getFullYear();\nconst nextActionDate = `${nextMonth}/${nextDay}/${nextYear}`;\n\n// ── Legacy nextFollowUpDate (kept from original, uses currentDate) ──\nconst date = new Date(currentDate);\ndate.setDate(date.getDate() + days);\nconst month = String(date.getMonth() + 1).padStart(2, '0');\nconst day   = String(date.getDate()).padStart(2, '0');\nconst year  = date.getFullYear();\nconst formattedDate = `${month}/${day}/${year}`;\n\nconst messages = {\n  1: {\n    subject: \"Найм иностранных сотрудников — как мы можем помочь\",\n    body: `Здравствуйте,\n\nНадеюсь, это сообщение застанет вас в добром здравии.\n\nМеня зовут Елена, я представляю компанию Imployii — мы специализируемся на помощи предприятиям в подборе квалифицированных иностранных работников для позиций в сфере производства, логистики и сервиса.\n\nМы берём на себя весь процесс подбора персонала и помогаем работодателям с оформлением необходимых документов, делая этот процесс максимально комфортным для вашей команды.\n\nЕсли вы сейчас ищете сотрудников или открыты к рассмотрению такой возможности — я буду рада рассказать подробнее или договориться о коротком ознакомительном звонке.\n\n${signature}`\n  },\n  2: {\n    subject: \"Напоминание о моём предыдущем письме\",\n    body: `Здравствуйте,\n\nХотела уточнить, удалось ли вам ознакомиться с моим предыдущим письмом о подборе персонала.\n\nСегодня многие компании решают проблему нехватки кадров за счёт найма иностранных работников, поэтому я решила написать повторно.\n\nПодскажите, актуален ли для вас сейчас вопрос найма сотрудников?\n\n${signature}`\n  },\n  3: {\n    subject: \"Как другие компании справляются с нехваткой персонала\",\n    body: `Здравствуйте,\n\nМногие работодатели, с которыми мы сотрудничаем, сталкивались с той же проблемой — сложностью поиска надёжных местных сотрудников для производства, логистики и сферы услуг.\n\nНачав работу с нами, они смогли быстро закрыть вакансии квалифицированными иностранными специалистами, пока мы занимались всеми документами на стороне работодателя.\n\nЕсли это актуально для вас — я буду рада рассказать подробнее или организовать короткий звонок.\n\n${signature}`\n  },\n  4: {\n    subject: \"Можем ли мы продвинуться с вопросом найма?\",\n    body: `Здравствуйте,\n\nХотела уточнить, актуален ли для вас сейчас вопрос подбора сотрудников.\n\nПри необходимости мы можем оперативно направить дополнительные резюме или скорректировать выборку кандидатов в соответствии с вашими текущими требованиями.\n\nПожалуйста, дайте знать, как вам удобнее действовать дальше. После выбора кандидатов работодателю необходимо подать приглашение — мы сопровождаем этот процесс на каждом этапе оформления документов.\n\n${signature}`\n  },\n  5: {\n    subject: \"Стоит ли нам продолжать процесс подбора?\",\n    body: `Здравствуйте,\n\nЯ понимаю, что приоритеты компании могут меняться, поэтому хотела уточнить — стоит ли нам продолжать процесс подбора персонала?\n\nМы можем вернуться к этому в удобное для вас время, как только вопрос снова станет актуальным.\n\nБуду рада оставаться на связи. После выбора кандидатов работодателю необходимо подать приглашение — мы сопровождаем этот процесс на каждом этапе оформления документов.\n\n${signature}`\n  },\n  6: {\n    subject: \"Возвращаясь к теме — актуален ли сейчас найм?\",\n    body: `Здравствуйте,\n\nПрошло некоторое время с нашего последнего общения, и я хотела написать ещё раз.\n\nПотребности в персонале могут меняться быстро, и мы готовы помочь, как только для вас наступит подходящий момент.\n\nЕсли вопрос подбора снова стал актуальным — я буду рада возобновить общение и обсудить, как мы можем поддержать вашу команду.\n\n${signature}`\n  },\n  7: {\n    subject: \"Мы по-прежнему готовы помочь с подбором персонала\",\n    body: `Здравствуйте,\n\nХотела напомнить, что мы по-прежнему здесь и готовы помочь с вашими потребностями в подборе сотрудников.\n\nСейчас у нас есть квалифицированные кандидаты в сфере производства, логистики и услуг, готовые приступить к работе.\n\nЕсли у вас есть открытые вакансии или вы ожидаете их появления в ближайшее время — сейчас хороший момент, чтобы начать процесс.\n\n${signature}`\n  },\n  8: {\n    subject: \"Короткое обновление — новые кандидаты доступны\",\n    body: `Здравствуйте,\n\nХотела поделиться новостью — мы недавно пополнили нашу базу новыми кандидатами в нескольких отраслях, включая производство, логистику и сферу услуг.\n\nЕсли вы хотите закрыть какие-либо позиции — мы можем сразу направить вам анкеты и оперативно пройти все этапы.\n\nДайте знать, если хотите ознакомиться.\n\n${signature}`\n  },\n  9: {\n    subject: \"На связи — есть ли планы по найму в ближайшее время?\",\n    body: `Здравствуйте,\n\nПо мере того как год идёт вперёд, многие компании начинают планировать подбор персонала на предстоящие месяцы.\n\nХотела уточнить, есть ли у вас планы по найму, в реализации которых мы могли бы помочь.\n\nМы готовы сделать этот процесс максимально простым — от выбора кандидатов до полного сопровождения документации.\n\n${signature}`\n  },\n  10: {\n    subject: \"Давно не общались — предлагаю возобновить контакт\",\n    body: `Здравствуйте,\n\nНадеюсь, у вас всё хорошо.\n\nПрошло уже немало времени с нашего последнего разговора, и я хотела написать ещё раз — чтобы узнать, стал ли вопрос найма иностранных работников актуальным для вашей компании.\n\nМы продолжаем работать с работодателями в различных отраслях и будем рады поддержать вас, когда возникнет такая необходимость.\n\n${signature}`\n  },\n  11: {\n    subject: \"Мы по-прежнему готовы поддержать ваш подбор персонала\",\n    body: `Здравствуйте,\n\nХотела кратко написать, чтобы напомнить: наша команда по-прежнему полностью готова помочь с вашими кадровыми потребностями.\n\nНужен ли вам один человек или целая группа — мы можем адаптировать процесс подбора под ваши требования и сроки.\n\nОбращайтесь в любое время — мы всегда рады помочь.\n\n${signature}`\n  },\n  12: {\n    subject: \"Возможно, сейчас подходящий момент для найма?\",\n    body: `Здравствуйте,\n\nИногда всё дело в подходящем моменте, и я хотела ещё раз уточнить — не наступил ли он для вас.\n\nМы помогли многим компаниям в схожей ситуации быстро и без лишних сложностей начать процесс, и будем рады сделать то же самое для вас.\n\nЕсли у вас есть даже небольшая потребность в персонале прямо сейчас — это повод для короткого разговора.\n\n${signature}`\n  },\n  13: {\n    subject: \"Ещё одно сообщение, прежде чем я завершу переписку\",\n    body: `Здравствуйте,\n\nХотела написать ещё раз, прежде чем прекратить напоминать о себе.\n\nЕсли найм иностранных работников на данном этапе не актуален для вашей компании — я прекрасно понимаю и не буду больше вас беспокоить.\n\nОднако если есть хоть малейший шанс, что это может быть полезно — даже в ближайшей перспективе — я буду рада короткому разговору.\n\n${signature}`\n  },\n  14: {\n    subject: \"Финальное сообщение — мы будем здесь, когда вы будете готовы\",\n    body: `Здравствуйте,\n\nЭто моё последнее сообщение на данный момент, и я хочу завершить его на позитивной ноте.\n\nЕсли ваши потребности в найме когда-либо изменятся — пожалуйста, не стесняйтесь обращаться. Мы будем рады продолжить разговор в любое время.\n\nСпасибо за ваше время, и желаю вам и вашей команде дальнейших успехов.\n\n${signature}`\n  }\n};\n\nconst selected = messages[attemptCount];\n\nif (!selected) {\n  throw new Error(`No message defined for Attempt Count: ${attemptCount}`);\n}\n\n// ── Next attempt's subject & body (preview of what comes next) ──\nconst nextAttemptCount = attemptCount + 1;\nconst nextSelected = messages[nextAttemptCount] || null;\n\n// Determine loop status for tracking\nlet loopStatus;\nif (attemptCount <= 5) {\n  loopStatus = 'loop_1';\n} else if (attemptCount <= 10) {\n  loopStatus = 'loop_2';\n} else {\n  loopStatus = 'loop_3';\n}\n\nreturn [{\n  json: {\n    subject: selected.subject,\n    body: selected.body,\n    attemptCount: attemptCount,\n    nextActionDate: nextActionDate,\n    nextActionSubject: nextSelected ? nextSelected.subject : null,\n    nextActionBody: nextSelected ? nextSelected.body : null,\n    nextFollowUpDate: formattedDate,\n    loopStatus: loopStatus\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1776,
+        1600
+      ],
+      "id": "cb872629-f4b1-4f95-81e7-0a635d2474f7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fcee3d54-84d1-4516-943e-99941b5a02f9",
+              "leftValue": "={{ $json['Email Response'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2208,
+        1648
+      ],
+      "id": "3d7b27c5-fa72-4619-8e2d-9bcab9c8848b",
+      "name": "is no response?"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "startIndex": "={{ $('is no response?').item.json.row_number }}"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -656,
+        1616
+      ],
+      "id": "4ff3f5ab-a4a1-4465-bc36-8e3a3ab84251",
+      "name": "Delete rows or columns from sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fa8b4bf3-9c92-4038-b75a-3933f7175329",
+              "leftValue": "={{ $json['Attempt Count'] }}",
+              "rightValue": 15,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -928,
+        1600
+      ],
+      "id": "75026231-6210-44b8-9891-9cebcdcd7a9a",
+      "name": "attempt 15?"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -3168,
+        1552
+      ],
+      "id": "6d6b995f-8ca7-4c95-b60e-da365e6158f4",
+      "name": "Wait",
+      "webhookId": "f92b3ae6-accc-40f7-83c5-e5b78f913b5a"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9e91b20e-531d-499f-82a2-2f3270209c99",
+              "leftValue": "={{ $json['Next Action Date'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3392,
+        1088
+      ],
+      "id": "990c86b2-73e0-4c56-b76c-03863924a0bf",
+      "name": "Next date is empty"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 20,
+              "triggerAtMinute": 26
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -5024,
+        1104
+      ],
+      "id": "b331fd20-73ca-49eb-bf0c-ac10c8ee8233",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Per-lead eligibility check\nconst d = $input.first().json;\nconst today = new Date();\ntoday.setHours(0,0,0,0);\nconst todayStr = today.toISOString().split('T')[0];\nconst leadId     = (d['Lead ID'] || '').toString().trim();\nconst status     = (d['Lead Status'] || '').toString().trim().toUpperCase();\nconst coolingRaw = d['Cooling Until'] ? d['Cooling Until'].toString().trim() : '';\nconst nextRaw    = d['Next Action Date'] ? d['Next Action Date'].toString().trim() : '';\nconst attempts   = parseInt(d['Attempt Count'] || 0);\nconst method     = (d['Preferred Contact Method'] || '').toString().trim().toUpperCase();\nconst phone      = (d['Phone Number'] || '').toString().trim();\nconst email      = (d['Email'] || '').toString().trim();\n\n// Must have Lead ID\nif (!leadId) return [{ json: { _skip: true, _reason: 'NO_LEAD_ID', ...d } }];\n\n// Skip permanently closed\nif (['DISQUALIFIED','CLOSED','QUALIFIED'].includes(status))\n  return [{ json: { _skip: true, _reason: 'STATUS_CLOSED', ...d } }];\n\n// Cooling period guard\nif (coolingRaw) {\n  const cooling = new Date(coolingRaw);\n  cooling.setHours(0,0,0,0);\n  if (cooling > today)\n    return [{ json: { _skip: true, _reason: 'IN_COOLING', ...d } }];\n}\n\n// Max attempt guard\nif (attempts >= 1000)\n  return [{ json: { _skip: true, _reason: 'MAX_ATTEMPTS', ...d } }];\n\n// Contact info guard\n// if (method === 'PHONE' && !phone)\n//   return [{ json: { _skip: true, _reason: 'NO_PHONE', ...d } }];\n// if (['EMAIL','WHATSAPP','TELEGRAM'].includes(method) && !email && !phone)\n//   return [{ json: { _skip: true, _reason: 'NO_CONTACT_INFO', ...d } }];\n\n// NEW → always contact\nif (status === 'NEW' || status === '') {\n  return [{ json: { _skip: false, _eligibilityReason: 'NEW_LEAD', _today: todayStr, ...d } }];\n}\n\n// Other statuses → সবসময় contact\nreturn [{ json: { _skip: false, _eligibilityReason: `STATUS_${status}`, _today: todayStr, ...d } }];"
+      },
+      "id": "532ce718-81e0-4f1b-8001-e1c70587d3a4",
+      "name": "Check Lead Eligibility2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3872,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "cm1",
+                    "leftValue": "={{ $json['Contact Method'] }}",
+                    "rightValue": "SMS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SMS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "cm2",
+                    "leftValue": "={{ $json['Contact Method'] }}",
+                    "rightValue": "Whatts App",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Whatts App"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "cm3",
+                    "leftValue": "={{ $json['Contact Method'] }}",
+                    "rightValue": "Email",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Email"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "cm4",
+                    "leftValue": "={{ $json['Contact Method'] }}",
+                    "rightValue": "Telegram",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Telegram"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "83f3dd80-363e-453a-9ab7-96672a1dd35a",
+      "name": "Route by Contact Method3",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -2704,
+        1552
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead ID": "={{ $('is no response?').item.json['Lead ID'] }}",
+            "Attempt Count": "={{ $('Only take 1 lead = loop count').item.json['Attempt Count'] + 1 }}",
+            "Last Contact Date": "={{ DateTime.now().toFormat('MM/dd/yyyy') }}",
+            "Next Action Date": "={{ $('Code in JavaScript').item.json.nextActionDate }}",
+            "Lead Status": "Sent to Email Loop",
+            "Message History": "={{ DateTime.now().toFormat('MM/dd/yyyy') }}:\n{{ $('Code in JavaScript').item.json.body }}"
+          },
+          "matchingColumns": [
+            "Lead ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role",
+              "displayName": "Job Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Import Date",
+              "displayName": "Import Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Method",
+              "displayName": "Contact Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Message History",
+              "displayName": "Message History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Date",
+              "displayName": "Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next Action Date",
+              "displayName": "Next Action Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Lead Status",
+              "displayName": "Lead Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Contact Date",
+              "displayName": "Last Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Candidates Matched ID",
+              "displayName": "Candidates Matched ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role Needed",
+              "displayName": "Job Role Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number of Workers Needed",
+              "displayName": "Number of Workers Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Working Hours",
+              "displayName": "Working Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Accomodation Provided",
+              "displayName": "Accomodation Provided",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Attempt Count",
+              "displayName": "Attempt Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Response",
+              "displayName": "Email Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "locationDefine": {
+            "values": {
+              "headerRow": 2,
+              "firstDataRow": 3
+            }
+          }
+        }
+      },
+      "id": "7cc19ee0-d50f-455e-9e35-e3b7ab819e04",
+      "name": "Mark Contact Initiated in Sheet4",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        -1200,
+        1504
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead ID": "={{ $('No Email response').item.json['Lead ID'] }}",
+            "Attempt Count": "={{ $('Only take 1 lead = loop count').item.json['Attempt Count'] + 1 }}",
+            "Lead Status": "Can not send"
+          },
+          "matchingColumns": [
+            "Lead ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role",
+              "displayName": "Job Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Import Date",
+              "displayName": "Import Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Method",
+              "displayName": "Contact Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Message History",
+              "displayName": "Message History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Date",
+              "displayName": "Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next Action Date",
+              "displayName": "Next Action Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Status",
+              "displayName": "Lead Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Contact Date",
+              "displayName": "Last Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Candidates Matched ID",
+              "displayName": "Candidates Matched ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role Needed",
+              "displayName": "Job Role Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number of Workers Needed",
+              "displayName": "Number of Workers Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Working Hours",
+              "displayName": "Working Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Accomodation Provided",
+              "displayName": "Accomodation Provided",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Attempt Count",
+              "displayName": "Attempt Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Response",
+              "displayName": "Email Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "locationDefine": {
+            "values": {
+              "headerRow": 2,
+              "firstDataRow": 3
+            }
+          }
+        }
+      },
+      "id": "5b0331c6-b738-41fb-b70f-d55730923485",
+      "name": "Mark Contact Initiated in Sheet1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        -1184,
+        1840
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://portal.bulkgate.com/api/1.0/simple/transactional",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"application_id\": \"37680\",\n  \"application_token\": \"z9ru0GjHWN0RDzzYtIbrrLV1B7U8NMo9oPgzoMgwZsWIpjnw9u\",\n  \"number\": \"+{{ $('Only take 1 lead = loop count').item.json['Phone Number'] }}\",\n  \"text\": \"Zdravstvujte,\\n\\nVakansija, kotoruju vy razmestili, vsjo eshhjo aktual’na?\\n\\nRassmatrivaete li vy vozmozhnost’ najma rabotnikov iz-za rubezha?\\n\\nU nas est’ bolee 1000 rabotnikov v razlichnyh sferah.\\n\\nNashi uslugi besplatny.\\n\\nVy mozhete svjazat’sja so mnoj:\\nTelegram: https://t.me/elenaiimp\\nWhatsApp: https://wa.me/48505340709\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1328,
+        640
+      ],
+      "id": "e7e4a9e6-9858-458e-9efc-c1ec1d86b453",
+      "name": "HTTP Request3",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead ID": "={{ $('Previous conversation is empty?1').item.json['Lead ID'] }}",
+            "Last Contact Date": "={{ DateTime.now().toFormat('MM/dd/yyyy') }}",
+            "Next Action Date": "=nan",
+            "Lead Status": "Sent",
+            "Message History": "Zdravstvujte,\\n\\nVakansija, kotoruju vy razmestili, vsjo eshhjo aktual’na?\\n\\nRassmatrivaete li vy vozmozhnost’ najma rabotnikov iz-za rubezha?\\n\\nU nas est’ bolee 1000 rabotnikov v razlichnyh sferah.\\n\\nNashi uslugi besplatny.\\n\\nVy mozhete svjazat’sja so mnoj:\\nTelegram: @elenaimp\\nWhatsApp: +48729086927",
+            "Contact Method": "SMS",
+            "Attempt Count": "={{ $('Only take 1 lead = loop count').item.json['Attempt Count'] + 1 }}"
+          },
+          "matchingColumns": [
+            "Lead ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role",
+              "displayName": "Job Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Import Date",
+              "displayName": "Import Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Method",
+              "displayName": "Contact Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Message History",
+              "displayName": "Message History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Date",
+              "displayName": "Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next Action Date",
+              "displayName": "Next Action Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Lead Status",
+              "displayName": "Lead Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Contact Date",
+              "displayName": "Last Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Candidates Matched ID",
+              "displayName": "Candidates Matched ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role Needed",
+              "displayName": "Job Role Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number of Workers Needed",
+              "displayName": "Number of Workers Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Working Hours",
+              "displayName": "Working Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Accomodation Provided",
+              "displayName": "Accomodation Provided",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Attempt Count",
+              "displayName": "Attempt Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Response",
+              "displayName": "Email Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "locationDefine": {
+            "values": {
+              "headerRow": 2,
+              "firstDataRow": 3
+            }
+          }
+        }
+      },
+      "id": "76d9eaea-e8ee-4150-89a7-61bd1dc2c6a4",
+      "name": "Mark Contact Initiated in Sheet5",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        -1072,
+        544
+      ],
+      "retryOnFail": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "cm1",
+                    "leftValue": "={{ $json['Contact Method'] }}",
+                    "rightValue": "Not selected",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Not selected"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "cm2",
+                    "leftValue": "={{ $json['Contact Method'] }}",
+                    "rightValue": "Whatts App",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Whatts App"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "cm3",
+                    "leftValue": "={{ $json['Contact Method'] }}",
+                    "rightValue": "Email",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Email"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "cm4",
+                    "leftValue": "={{ $json['Contact Method'] }}",
+                    "rightValue": "Telegram",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Telegram"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8e246580-3458-4a6d-9450-74c698861aef",
+      "name": "Route by Contact Method",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -2672,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "toRecipients": "={{ $json.Email }}",
+        "subject": "Подбор сотрудников — короткий вопрос",
+        "bodyContent": "Здравствуйте,\n\nМеня зовут Елена, я занимаюсь координацией подбора персонала для компаний, испытывающих нехватку сотрудников.\n\nХотела уточнить, рассматриваете ли вы в настоящее время найм иностранных сотрудников с оформлением рабочей визы.\n\nМы сопровождаем работодателей на всех этапах процесса, и в связи с расширением в вашем регионе наши услуги предоставляются для компаний без комиссии.\n\nЕсли это актуально для вас, буду рада обсудить детали.\n\nС уважением,\nЕлена\nelena@imployii.com\nTelegram: https://t.me/elenaiimp\nWhatsApp: https://wa.me/48505340709",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [
+        -1696,
+        1056
+      ],
+      "id": "d8f6addc-428a-46de-9eaf-382580248bfd",
+      "name": "Email 1 - Introduction2",
+      "webhookId": "c22cb301-4f57-4641-b3d2-c938bdf26441",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "qJ8BoL5zulZl1YeG",
+          "name": "Microsoft Outlook OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "90e0b0b3-e7ef-4284-8191-289b58f7331d",
+              "leftValue": "={{ $json.success }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1488,
+        1056
+      ],
+      "id": "11436659-1fb4-46e3-b6af-b62c769460fb",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead ID": "={{ $('No Email response1').item.json['Lead ID'] }}",
+            "Attempt Count": "={{ $('Only take 1 lead = loop count').item.json['Attempt Count'] + 1 }}",
+            "Last Contact Date": "={{ DateTime.now().toFormat('MM/dd/yyyy') }}",
+            "Next Action Date": "={{ DateTime.now().plus({ days: 2 }).toFormat('MM/dd/yyyy') }}",
+            "Lead Status": "Sent to Email Loop",
+            "Message History": "Здравствуйте,  Меня зовут Елена, я занимаюсь координацией подбора персонала для компаний, испытывающих нехватку сотрудников.  Хотела уточнить, рассматриваете ли вы в настоящее время найм иностранных сотрудников с оформлением рабочей визы.  Мы сопровождаем работодателей на всех этапах процесса, и в связи с расширением в вашем регионе наши услуги предоставляются для компаний без комиссии.  Если это актуально для вас, буду рада обсудить детали.  С уважением, Елена elena@imployii.com WhatsApp: +48729086927 Telegram: t.me/Imployiibot",
+            "Contact Method": "Email"
+          },
+          "matchingColumns": [
+            "Lead ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role",
+              "displayName": "Job Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Import Date",
+              "displayName": "Import Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Method",
+              "displayName": "Contact Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Message History",
+              "displayName": "Message History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Date",
+              "displayName": "Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next Action Date",
+              "displayName": "Next Action Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Lead Status",
+              "displayName": "Lead Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Contact Date",
+              "displayName": "Last Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Candidates Matched ID",
+              "displayName": "Candidates Matched ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role Needed",
+              "displayName": "Job Role Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number of Workers Needed",
+              "displayName": "Number of Workers Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Working Hours",
+              "displayName": "Working Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Accomodation Provided",
+              "displayName": "Accomodation Provided",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Attempt Count",
+              "displayName": "Attempt Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Response",
+              "displayName": "Email Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "locationDefine": {
+            "values": {
+              "headerRow": 2,
+              "firstDataRow": 3
+            }
+          }
+        }
+      },
+      "id": "3975f548-28eb-4554-99fc-afd50a633033",
+      "name": "Mark Contact Initiated in Sheet7",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        -1216,
+        1040
+      ],
+      "retryOnFail": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fcee3d54-84d1-4516-943e-99941b5a02f9",
+              "leftValue": "={{ $json['Email Response'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2192,
+        1072
+      ],
+      "id": "467bb439-6b16-4851-9f13-c8e814130aca",
+      "name": "No Email response1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead ID": "={{ $('No Email response1').item.json['Lead ID'] }}",
+            "Attempt Count": "={{ $('Only take 1 lead = loop count').item.json['Attempt Count'] + 1 }}",
+            "Lead Status": "Can not send"
+          },
+          "matchingColumns": [
+            "Lead ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role",
+              "displayName": "Job Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Import Date",
+              "displayName": "Import Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Method",
+              "displayName": "Contact Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Message History",
+              "displayName": "Message History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Date",
+              "displayName": "Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next Action Date",
+              "displayName": "Next Action Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Status",
+              "displayName": "Lead Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Contact Date",
+              "displayName": "Last Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Candidates Matched ID",
+              "displayName": "Candidates Matched ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role Needed",
+              "displayName": "Job Role Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number of Workers Needed",
+              "displayName": "Number of Workers Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Working Hours",
+              "displayName": "Working Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Accomodation Provided",
+              "displayName": "Accomodation Provided",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Attempt Count",
+              "displayName": "Attempt Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Response",
+              "displayName": "Email Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "locationDefine": {
+            "values": {
+              "headerRow": 2,
+              "firstDataRow": 3
+            }
+          }
+        }
+      },
+      "id": "ae59a3d1-0035-400f-99df-6da9b6337311",
+      "name": "Mark Contact Initiated in Sheet8",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        -1216,
+        1232
+      ],
+      "retryOnFail": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead ID": "={{ $('Previous conversation is empty?1').item.json['Lead ID'] }}",
+            "Lead Status": "Can not send",
+            "Attempt Count": "={{ $('Only take 1 lead = loop count').item.json['Attempt Count'] + 1 }}"
+          },
+          "matchingColumns": [
+            "Lead ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role",
+              "displayName": "Job Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Import Date",
+              "displayName": "Import Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Method",
+              "displayName": "Contact Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Message History",
+              "displayName": "Message History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Date",
+              "displayName": "Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next Action Date",
+              "displayName": "Next Action Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Lead Status",
+              "displayName": "Lead Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Contact Date",
+              "displayName": "Last Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Candidates Matched ID",
+              "displayName": "Candidates Matched ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role Needed",
+              "displayName": "Job Role Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number of Workers Needed",
+              "displayName": "Number of Workers Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Working Hours",
+              "displayName": "Working Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Accomodation Provided",
+              "displayName": "Accomodation Provided",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Attempt Count",
+              "displayName": "Attempt Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Response",
+              "displayName": "Email Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "locationDefine": {
+            "values": {
+              "headerRow": 2,
+              "firstDataRow": 3
+            }
+          }
+        }
+      },
+      "id": "9be5ad87-2bd9-4996-b68f-670040fa4555",
+      "name": "Mark Contact Initiated in Sheet9",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        -1072,
+        720
+      ],
+      "retryOnFail": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "id": "cca1a84d-bcf3-45ad-855d-8212d90b24db",
+      "name": "Wait 5s Before Next Lead3",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -2208,
+        1296
+      ],
+      "webhookId": "wait-loop"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://telegram-api-test.onrender.com/send",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"{{ $json['If telegram: USER_ID'] }}\",\n  \"text\": \"Здравствуйте, вы рассматриваете иностранных работников?\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -2272,
+        688
+      ],
+      "id": "3ed4347a-4674-4c86-ae28-f140a3fe513e",
+      "name": "HTTP Request2",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw",
+          "mode": "list",
+          "cachedResultName": "NEW_RECRUITMENT_SYSTEM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TbaLtv0SX2-8n--sAD5ltjx12IUMC3MXT0b6LqnSTnw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead ID": "={{ $('Previous conversation is empty?1').item.json['Lead ID'] }}",
+            "Last Contact Date": "={{ DateTime.now().toFormat('MM/dd/yyyy') }}",
+            "Next Action Date": "=nan",
+            "Lead Status": "Sent",
+            "Message History": "Здравствуйте, вы рассматриваете иностранных работников?",
+            "Contact Method": "Telegram",
+            "Attempt Count": "={{ $('Only take 1 lead = loop count').item.json['Attempt Count'] + 1 }}"
+          },
+          "matchingColumns": [
+            "Lead ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role",
+              "displayName": "Job Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Import Date",
+              "displayName": "Import Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Name",
+              "displayName": "Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Method",
+              "displayName": "Contact Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Message History",
+              "displayName": "Message History",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact Date",
+              "displayName": "Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next Action Date",
+              "displayName": "Next Action Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Lead Status",
+              "displayName": "Lead Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Contact Date",
+              "displayName": "Last Contact Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Candidates Matched ID",
+              "displayName": "Candidates Matched ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Role Needed",
+              "displayName": "Job Role Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number of Workers Needed",
+              "displayName": "Number of Workers Needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Working Hours",
+              "displayName": "Working Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Accomodation Provided",
+              "displayName": "Accomodation Provided",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Attempt Count",
+              "displayName": "Attempt Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email Response",
+              "displayName": "Email Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "locationDefine": {
+            "values": {
+              "headerRow": 2,
+              "firstDataRow": 3
+            }
+          }
+        }
+      },
+      "id": "8cf88866-2c2e-4457-9731-8f2c9e4bafd5",
+      "name": "Mark Contact Initiated in Sheet6",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        -1072,
+        368
+      ],
+      "retryOnFail": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cnDD4Ql5LsFjuOdI",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Should Contact This Lead?2": {
+      "main": [
+        [
+          {
+            "node": "Next date is empty",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5s Before Next Lead2": {
+      "main": [
+        [
+          {
+            "node": "Read Google Sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Previous conversation is empty?1": {
+      "main": [
+        [
+          {
+            "node": "Route by Contact Method",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route by Contact Method3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Google Sheet2": {
+      "main": [
+        [
+          {
+            "node": "Set 180 Loop Limit2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set 180 Loop Limit2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Loop Complete Summary1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Only take 1 lead = loop count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only take 1 lead = loop count": {
+      "main": [
+        [
+          {
+            "node": "Check Lead Eligibility2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5s Before Next Lead": {
+      "main": [
+        [
+          {
+            "node": "Read Google Sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match with todays date": {
+      "main": [
+        [
+          {
+            "node": "Previous conversation is empty?1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email 1 - Introduction1": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Mark Contact Initiated in Sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Contact Initiated in Sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait 5s Before Next Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Email 1 - Introduction1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is no response?": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 5s Before Next Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete rows or columns from sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s Before Next Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "attempt 15?": {
+      "main": [
+        [
+          {
+            "node": "Delete rows or columns from sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 5s Before Next Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Read Google Sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Next date is empty": {
+      "main": [
+        [
+          {
+            "node": "Previous conversation is empty?1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Match with todays date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Read Google Sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Lead Eligibility2": {
+      "main": [
+        [
+          {
+            "node": "Should Contact This Lead?2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Contact Method3": {
+      "main": [
+        [],
+        [],
+        [
+          {
+            "node": "is no response?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Contact Initiated in Sheet4": {
+      "main": [
+        [
+          {
+            "node": "attempt 15?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Contact Initiated in Sheet1": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s Before Next Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Mark Contact Initiated in Sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Contact Initiated in Sheet9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Contact Initiated in Sheet5": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s Before Next Lead2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Contact Method": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 5s Before Next Lead3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Email response1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email 1 - Introduction2": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Mark Contact Initiated in Sheet7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Contact Initiated in Sheet8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Contact Initiated in Sheet7": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s Before Next Lead2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Email response1": {
+      "main": [
+        [
+          {
+            "node": "Email 1 - Introduction2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Contact Initiated in Sheet8": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s Before Next Lead2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Contact Initiated in Sheet9": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s Before Next Lead2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5s Before Next Lead3": {
+      "main": [
+        [
+          {
+            "node": "Read Google Sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Mark Contact Initiated in Sheet6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Contact Initiated in Sheet6": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s Before Next Lead2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Moscow",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "f6dd1054-8432-454b-b891-bd48afe97c60",
+  "meta": {
+    "instanceId": "1bbb40a5d9a19a783ea4611efa90a868c66d67af885609f43e8a05b489e51130"
+  },
+  "id": "4giwOW4LBWAkTTRb",
+  "tags": []
+}
