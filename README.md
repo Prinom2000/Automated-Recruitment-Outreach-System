@@ -18,10 +18,12 @@ The AI phone agent, **Elena**, speaks fluent Russian and handles the full conver
 - 📧 **14-Step Email Sequences** — Progressive follow-up with escalating tone strategies
 - 💬 **WhatsApp Integration** — Via CodingMantra + UltraMSC
 - ✈️ **Telegram Integration** — Custom-built Telethon + FastAPI server
+- 📱 **SMS Integration** — Fully integrated SMS outreach channel with delivery tracking
 - 🧠 **GPT-5 Powered** — AI-generated contextual openers for follow-up calls
 - 📄 **Automated CV Sending** — Candidate matching by sector + Google Drive download + email
 - 🔄 **Smart Lead Eligibility Engine** — Cooling periods, status checks, attempt tracking
 - 📊 **Google Sheets as CRM** — Full read/write sync after every interaction
+- 📥 **Automated Lead Import Pipeline** — Raw leads from external sheet auto-processed into main engine with ID assignment and deduplication
 
 ---
 
@@ -37,12 +39,24 @@ Schedule Trigger → Read Google Sheet → Loop Over Leads
         ├── Phone   → Build VAPI Prompt → AI Call
         ├── Email   → Select Template   → Send via Outlook
         ├── WhatsApp → CodingMantra API
-        └── Telegram → Telethon FastAPI Server
+        ├── Telegram → Telethon FastAPI Server
+        └── SMS      → SMS Gateway API
 
 CHAIN B — Post-Call Processing (Webhook Triggered)
 ──────────────────────────────────────────────────
 VAPI Webhook → Parse Transcript → Update Google Sheet
   └── If CV Needed → Match Candidates → Download from Drive → Email CVs
+
+CHAIN C — Lead Import Pipeline (Scheduled: 17:08 daily)
+──────────────────────────────────────────────────────
+Schedule Trigger → Get All Existing Leads (find max Lead ID)
+  → Read Raw Leads (Lead Management sheet)
+  → Set Daily Loop Limit → Loop Over New Leads
+      └── Assign Lead ID (maxId + loop_index)
+          └── Normalize Phone Number
+              ├── Has Phone → Append to Leads Engine (Contact Method: Not selected)
+              └── No Phone  → Append to Leads Engine (Contact Method: Email)
+          → Archive to "Old Leads data" tab → Wait 10s → Next Lead
 ```
 
 ---
@@ -58,6 +72,7 @@ VAPI Webhook → Parse Transcript → Update Google Sheet
 | **Microsoft Outlook** | Email outreach via `elena@imployii.com` |
 | **Telethon + FastAPI** | Custom Telegram messaging server |
 | **CodingMantra + UltraMSC** | WhatsApp integration |
+| **SMS Gateway** | SMS outreach channel integration |
 | **Google Drive** | CV and passport file storage |
 
 ---
@@ -71,6 +86,13 @@ VAPI Webhook → Parse Transcript → Update Google Sheet
 | `Leads Engine` (gid=0) | Main leads database — all contacts, statuses, call history |
 | `Candidates Available` (gid=247118444) | Available candidate profiles with CV links |
 | `Placements` (gid=711664441) | Qualified leads and active placement pipeline |
+| `Old Leads data` (gid=872591740) | Archive of processed raw leads (written by Import Pipeline) |
+
+**Lead Management Spreadsheet** (separate file, ID: `1lCIhwYIHss2THItaeOubZz9ZqlqepG5DuNZUK3BWWrg`)
+
+| Tab | Description |
+|---|---|
+| `Raw leads` (gid=0) | Source of new leads — manually populated or externally fed |
 
 ---
 
@@ -96,6 +118,85 @@ Progressive follow-up with increasing gaps (2 days → 110 days), all written in
 - Matches candidate `Sector` field against employer's `Job Sector From Call`
 - Candidates with `Sector = "Any"` are always included
 - Downloads CV PDFs from Google Drive and attaches them to email
+
+### SMS Integration
+
+SMS is fully integrated as a native outreach channel alongside Phone, Email, WhatsApp, and Telegram. When a lead's `Preferred Contact Method` is set to `SMS`, the system routes to the SMS branch and sends a message via the SMS Gateway API.
+
+- Messages are sent in professional Russian, consistent with all other channels
+- Delivery status is written back to the Google Sheet after each send
+- Reply detection: if the lead has already responded, re-sending is skipped
+- Failed SMS attempts increment the attempt count, same as other channels
+- SMS credentials are stored securely in n8n's encrypted credential store
+
+
+---
+
+## 📥 Lead Import Pipeline
+
+A **separate scheduled workflow** runs daily at **17:08** to automatically import raw leads from an external source sheet into the main Leads Engine.
+
+### How It Works
+
+```
+Schedule Trigger (17:08 daily)
+  └── Get All Existing Leads → Find Max Lead ID
+        └── Read Raw Leads (Lead Management sheet)
+              └── Set Loop Limit → Loop Over Items
+                    └── Assign New Lead ID
+                          └── Normalize Phone Number
+                                ├── Has Phone? → Append with Contact Method = "Not selected"
+                                └── No Phone?  → Append with Contact Method = "Email"
+                                      └── Merge → Wait 10s → Next Lead
+```
+
+### Source Sheet
+
+| Field | Details |
+|---|---|
+| **Spreadsheet** | `Lead Management` (ID: `1lCIhwYIHss2THItaeOubZz9ZqlqepG5DuNZUK3BWWrg`) |
+| **Tab** | `Raw leads` (gid=0) |
+
+### What Gets Imported
+
+Each raw lead is mapped into the Leads Engine with these fields on import:
+
+| Field | Value |
+|---|---|
+| `Lead ID` | Auto-assigned (max existing ID + loop index) |
+| `Job Role` | From raw lead's `Job Title` field |
+| `Import Date` | Today's date (`MM/DD/YYYY`) |
+| `Lead Status` | `New` |
+| `Attempt Count` | `0` |
+| `Phone Number` | Cleaned & normalized (digits only; leading `8` → `7`) |
+| `Email` | From raw lead |
+| `Contact Method` | `Not selected` if phone exists, `Email` if phone is missing |
+
+### Phone Normalization Logic
+
+```javascript
+// Strips all non-digits
+// Replaces leading 8 with 7 (Russian mobile format fix)
+// e.g. 89001234567 → 79001234567
+phone = '7' + phone.slice(1);
+```
+
+### Deduplication & ID Assignment
+
+Before importing, the workflow reads all existing leads and finds the current maximum `Lead ID`. Each new lead is assigned `maxId + loop_index` to guarantee unique, sequential IDs with no collisions.
+
+### Old Leads Archive
+
+Non-email leads removed from the active Leads Engine are archived to the `Old Leads data` tab (gid=872591740) before deletion, preserving full history including `Message History`, all response fields (`Email Response`, `WhatsApp Response`, `Telegram Response`, `SMS Response`), and `Attempt Count`.
+
+### Import Loop Settings
+
+In the `Set daily Loop Limit` code node:
+```javascript
+const MAX_LOOP_LIMIT = 1; // Change to import more leads per run
+```
+A 10-second wait between each lead import prevents Google Sheets API rate limits.
+
 
 ---
 
@@ -126,6 +227,7 @@ Edit the `Schedule Trigger` node. Default: **15:50 (3:50 PM)** — optimized for
 | OpenAI API Key | GPT-5 first message generation |
 | Telethon FastAPI Bearer Token | Telegram server auth |
 | CodingMantra / UltraMSC | WhatsApp session |
+| SMS Gateway API Key | SMS outreach channel |
 
 > All credentials are stored in n8n's encrypted credential store — never hardcoded.
 
@@ -151,6 +253,7 @@ Edit the `Schedule Trigger` node. Default: **15:50 (3:50 PM)** — optimized for
 | Emails not sending | Re-authenticate Microsoft Outlook OAuth2 token |
 | Telegram messages failing | SSH into VPS, check FastAPI logs, restart Telethon service |
 | WhatsApp not sending | Re-scan QR via UltraMSC dashboard |
+| SMS not sending | Check SMS Gateway API key validity and account balance/quota |
 | CVs not attaching | Ensure Google Drive files are set to "Anyone with link can view" |
 | Sheet not updating after call | Verify VAPI webhook URL matches `Webhook1` node path in n8n |
 
