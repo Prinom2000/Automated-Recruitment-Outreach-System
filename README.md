@@ -1,6 +1,7 @@
 # 🤖 Imployii — Automated Recruitment Outreach System
 
 > AI-powered, multi-channel recruitment outreach pipeline built on **n8n** — fully automated lead management for employer acquisition.
+> 
 > A part of demo screenshot: 👇🏿
 <img width="1612" height="659" alt="image" src="https://github.com/user-attachments/assets/de7433c4-f931-427d-9f03-57d53dcdde23" />
 
